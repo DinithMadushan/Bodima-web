@@ -40,7 +40,7 @@ export default function Navbar() {
           {/* Brand */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="brand-text text-3xl tracking-tight text-white hover:opacity-90 transition-opacity">
-              බ‍ō<span>dima</span>.lk
+              බෝ<span>dima</span>.lk
             </Link>
           </div>
 

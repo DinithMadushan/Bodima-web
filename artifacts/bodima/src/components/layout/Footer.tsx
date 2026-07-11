@@ -10,7 +10,7 @@ export default function Footer() {
           {/* Brand Col */}
           <div>
             <Link href="/" className="brand-text text-3xl tracking-tight text-white mb-6 block">
-              බ‍ō<span>dima</span>.lk
+              බෝ<span>dima</span>.lk
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
               Sri Lanka's most trusted student boarding finder. We connect university students with safe, verified, and comfortable accommodations in Negombo and beyond.
