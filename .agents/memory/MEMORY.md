@@ -1,0 +1,1 @@
+- [bodima-architecture](bodima-architecture.md) — Auth token wiring, JWT secret, DB schema quirks, booking/access-control rules, and test credentials for bodima.lk

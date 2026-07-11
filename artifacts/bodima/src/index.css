@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --primary: #1a3c5e;
+  --accent: #e8a045;
+  --accent2: #c0392b;
+  --light: #f7f4ef;
+  --dark: #0f1f30;
+  --text: #2c3e50;
+  --muted: #7f8c8d;
+  --card-bg: #ffffff;
+  --border: #e8e0d5;
+  --shadow-sm: 0 2px 16px rgba(0,0,0,.06);
+  --shadow-md: 0 8px 40px rgba(0,0,0,.10);
+  --shadow-lg: 0 20px 60px rgba(26,60,94,.15);
+
+  --background: 40 27% 95%; /* #f7f4ef */
+  --foreground: 210 29% 24%; /* #2c3e50 */
+  --card: 0 0% 100%;
+  --card-foreground: 210 29% 24%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 210 29% 24%;
+  --primary-hsl: 210 57% 24%; /* #1a3c5e */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 40 27% 90%;
+  --secondary-foreground: 210 29% 24%;
+  --muted-hsl: 184 9% 52%; /* #7f8c8d */
+  --muted-foreground: 184 9% 40%;
+  --accent-hsl: 33 76% 59%; /* #e8a045 */
+  --accent-foreground: 0 0% 100%;
+  --destructive: 5 66% 46%; /* #c0392b */
+  --destructive-foreground: 0 0% 100%;
+  --border-hsl: 35 29% 87%; /* #e8e0d5 */
+  --input: 35 29% 87%;
+  --ring: 210 57% 24%;
+  --radius: 0.5rem;
+  
+  --app-font-sans: 'DM Sans', sans-serif;
+  --app-font-serif: 'Playfair Display', serif;
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border-hsl));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary-hsl));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted-hsl));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent-hsl));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--light);
+  color: var(--text);
+}
+
+h1, h2, h3, h4, h5, h6, .font-serif {
+  font-family: 'Playfair Display', serif;
+}
+
+.brand-text {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+}
+
+.brand-text span {
+  color: var(--accent);
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+  border-radius: 8px;
+  padding: 0.5rem 1.25rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.btn-primary:hover {
+  background-color: #112840;
+}
+
+.btn-accent {
+  background-color: var(--accent);
+  color: white;
+  border-radius: 8px;
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.btn-accent:hover {
+  background-color: #cf8a33;
+}
+
+.btn-danger {
+  background-color: var(--accent2);
+  color: white;
+  border-radius: 8px;
+  padding: 0.5rem 1.25rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.btn-danger:hover {
+  background-color: #a02d20;
+}
+
+.card-shadow {
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-shadow:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Base tailwind layers */
+@layer base {
+  * {
+    @apply border-border;
+  }
+}

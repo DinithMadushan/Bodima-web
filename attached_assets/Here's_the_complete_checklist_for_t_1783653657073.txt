@@ -1,0 +1,140 @@
+Here's the complete checklist for the Boarding Finder System from start to finish:
+
+---
+
+**PHASE 1 — PROJECT SETUP**
+- [ ] Create GitHub repository and define branching strategy
+- [ ] Set up Django project structure and virtual environment
+- [ ] Define folder structure and coding standards for the team
+- [ ] Configure Bootstrap and HTML/CSS/JS frontend scaffold
+- [ ] Set up MySQL database server and connect to Django
+
+---
+
+**PHASE 2 — DATABASE DESIGN**
+- [ ] Design ER diagram (User, Boarding, Inquiry, Booking, Review, Message tables)
+- [ ] Create MySQL schema — User, Student, BoardingOwner, Admin tables
+- [ ] Create Boarding, Inquiry, Booking, Review, Message tables with relationships
+- [ ] Write Django ORM models matching the schema
+- [ ] Run and validate all migrations
+
+---
+
+**PHASE 3 — AUTHENTICATION (FR01)**
+- [ ] Build user registration API with role support (Student, Owner, Admin)
+- [ ] Implement JWT / session authentication and access control
+- [ ] Design login page
+- [ ] Design register page
+- [ ] Design forgot-password page
+- [ ] Integrate auth API with frontend login and register forms
+
+---
+
+**PHASE 4 — SEARCH & LISTINGS (FR02, FR03)**
+- [ ] Build search API — filter by location, price, amenities, dates
+- [ ] Build listing detail API — photos, owner info, reviews
+- [ ] Integrate Google Maps API for location display
+- [ ] Store and query image file paths in the database
+- [ ] Design search results page with filter sidebar and listing cards
+- [ ] Design listing detail page with image gallery, map, owner info
+
+---
+
+**PHASE 5 — BOOKING & PAYMENT (FR04)**
+- [ ] Create Booking and Payment tables in DB
+- [ ] Build booking API — create, confirm, receipt generation
+- [ ] Integrate Stripe payment gateway
+- [ ] Configure PayPal as fallback payment option
+- [ ] Design booking form with date picker and payment fields
+
+---
+
+**PHASE 6 — OWNER DASHBOARD (FR05)**
+- [ ] Store listing availability and update status in DB
+- [ ] Build CRUD APIs for boarding listings — add, edit, delete, update
+- [ ] Handle image upload and storage for listings
+- [ ] Design owner dashboard — listing management panel
+- [ ] Connect owner dashboard UI to listing CRUD APIs
+
+---
+
+**PHASE 7 — ADMIN PANEL (FR08)**
+- [ ] Implement admin role logic and access control in DB
+- [ ] Build admin API — approve listings
+- [ ] Build admin API — reject listings
+- [ ] Build admin API — manage users
+- [ ] Design admin dashboard UI — listing approvals and user management
+- [ ] Connect admin dashboard UI to admin APIs
+
+---
+
+**PHASE 8 — REVIEWS & RATINGS (FR06)**
+- [ ] Create Review table in DB
+- [ ] Build reviews API — submit review
+- [ ] Build reviews API — fetch reviews per listing
+- [ ] Build reviews API — aggregate average rating
+- [ ] Design review submission form with 5-star rating UI
+
+---
+
+**PHASE 9 — MESSAGING (FR07)**
+- [ ] Create Message table in DB
+- [ ] Build messaging API — send message
+- [ ] Build messaging API — receive messages
+- [ ] Build messaging API — notification support
+- [ ] Design messaging interface — chat-style UI between student and owner
+
+---
+
+**PHASE 10 — INTEGRATION**
+- [ ] Connect all backend APIs to their corresponding frontend pages
+- [ ] Verify auth flow end-to-end (register → login → dashboard)
+- [ ] Verify search and listing detail flow end-to-end
+- [ ] Verify booking and payment flow end-to-end
+- [ ] Verify owner dashboard flow end-to-end
+- [ ] Verify admin approval flow end-to-end
+- [ ] Verify review submission flow end-to-end
+- [ ] Verify messaging flow end-to-end
+- [ ] Ensure full responsiveness across desktop, tablet, and mobile
+- [ ] Validate data integrity and DB query optimisation
+- [ ] Add indexes on frequently queried DB columns
+
+---
+
+**PHASE 11 — TESTING**
+- [ ] Write unit tests for all 8 API modules
+- [ ] Performance testing — confirm search results return under 3 seconds
+- [ ] DB query performance testing — confirm queries under 200ms
+- [ ] Security testing — JWT token expiry and refresh
+- [ ] Security testing — HTTPS enforcement
+- [ ] Security testing — data encryption at rest and in transit
+- [ ] Security testing — GDPR data handling and deletion flow
+- [ ] Usability testing — target 80%+ user satisfaction score
+- [ ] Cross-browser testing — Chrome
+- [ ] Cross-browser testing — Firefox
+- [ ] Cross-browser testing — Edge
+- [ ] Fix all critical bugs found during testing
+- [ ] Fix all minor bugs found during testing
+
+---
+
+**PHASE 12 — UAT & DEPLOYMENT**
+- [ ] Prepare UAT test cases
+- [ ] Conduct UAT sessions with test users
+- [ ] Collect stakeholder feedback
+- [ ] Fix UI and functional issues raised during UAT
+- [ ] Obtain UAT sign-off from supervisor / stakeholder
+- [ ] Configure cloud hosting environment
+- [ ] Set up environment variables and DB connection on server
+- [ ] Deploy application to cloud
+- [ ] Configure daily automated backups
+- [ ] Document and test disaster recovery plan
+- [ ] Verify 99.9% uptime SLA during staging
+- [ ] Final DB integrity check — constraints, indexes, FK references
+- [ ] Confirm system is live and accessible
+
+---
+
+**Total: 83 tasks across 12 phases**
+
+This covers everything from the very first Git commit to the final go-live confirmation. You can copy this directly into Notion, Trello, GitHub Issues, or any project management tool your team uses.

@@ -1,22 +1,27 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: බෝdima.lk Boarding Finder API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: auth
+  - name: listings
+  - name: bookings
+  - name: reviews
+  - name: messages
+  - name: admin
+  - name: dashboard
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +29,671 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ── AUTH ──────────────────────────────────────────────────────────
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me/update:
+    patch:
+      operationId: updateMe
+      tags: [auth]
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfileUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+  # ── LISTINGS ──────────────────────────────────────────────────────
+  /listings/featured:
+    get:
+      operationId: getFeaturedListings
+      tags: [listings]
+      summary: Get featured/top listings
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+
+  /listings/search:
+    get:
+      operationId: searchListings
+      tags: [listings]
+      summary: Search listings with filters
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: location
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: gender
+          in: query
+          schema:
+            type: string
+        - name: min_price
+          in: query
+          schema:
+            type: integer
+        - name: max_price
+          in: query
+          schema:
+            type: integer
+        - name: amenities
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+        - name: min_rating
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingsSearchResult"
+
+  /listings/{id}:
+    get:
+      operationId: getListing
+      tags: [listings]
+      summary: Get listing detail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ── OWNER LISTINGS ────────────────────────────────────────────────
+  /owner/listings:
+    get:
+      operationId: getOwnerListings
+      tags: [listings]
+      summary: Get current owner's listings
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ListingDetail"
+    post:
+      operationId: createListing
+      tags: [listings]
+      summary: Create a new listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListingInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingDetail"
+
+  /owner/listings/{id}:
+    patch:
+      operationId: updateListing
+      tags: [listings]
+      summary: Update a listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListingUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingDetail"
+    delete:
+      operationId: deleteListing
+      tags: [listings]
+      summary: Delete a listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  # ── BOOKINGS ──────────────────────────────────────────────────────
+  /bookings:
+    get:
+      operationId: getBookings
+      tags: [bookings]
+      summary: Get bookings for current user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Create a booking request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/{id}:
+    get:
+      operationId: getBooking
+      tags: [bookings]
+      summary: Get booking detail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/{id}/status:
+    patch:
+      operationId: updateBookingStatus
+      tags: [bookings]
+      summary: Update booking status (owner confirms/rejects)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingStatusUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /owner/bookings:
+    get:
+      operationId: getOwnerBookings
+      tags: [bookings]
+      summary: Get all bookings for owner's listings
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+
+  # ── REVIEWS ───────────────────────────────────────────────────────
+  /reviews:
+    get:
+      operationId: getReviews
+      tags: [reviews]
+      summary: Get reviews for a listing
+      parameters:
+        - name: listing_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+    post:
+      operationId: createReview
+      tags: [reviews]
+      summary: Submit a review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+
+  /reviews/all:
+    get:
+      operationId: getAllReviews
+      tags: [reviews]
+      summary: Get all public reviews (for reviews page)
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+
+  # ── MESSAGES ──────────────────────────────────────────────────────
+  /messages/conversations:
+    get:
+      operationId: getConversations
+      tags: [messages]
+      summary: Get all conversations for current user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+    post:
+      operationId: createConversation
+      tags: [messages]
+      summary: Start or get a conversation about a listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+
+  /messages/conversations/{id}:
+    get:
+      operationId: getConversation
+      tags: [messages]
+      summary: Get conversation with messages
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversationDetail"
+
+  /messages/conversations/{id}/send:
+    post:
+      operationId: sendMessage
+      tags: [messages]
+      summary: Send a message in a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+
+  /messages/conversations/{id}/read:
+    patch:
+      operationId: markConversationRead
+      tags: [messages]
+      summary: Mark conversation as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /messages/unread-count:
+    get:
+      operationId: getUnreadCount
+      tags: [messages]
+      summary: Get unread message count
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnreadCount"
+
+  # ── ADMIN ─────────────────────────────────────────────────────────
+  /admin/listings:
+    get:
+      operationId: adminGetListings
+      tags: [admin]
+      summary: Admin - get all listings with status filter
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ListingDetail"
+
+  /admin/listings/{id}/status:
+    patch:
+      operationId: adminUpdateListingStatus
+      tags: [admin]
+      summary: Admin - approve or reject listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminListingStatusUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingDetail"
+
+  /admin/users:
+    get:
+      operationId: adminGetUsers
+      tags: [admin]
+      summary: Admin - get all users
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+        - name: q
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminUser"
+
+  /admin/users/{id}/status:
+    patch:
+      operationId: adminUpdateUserStatus
+      tags: [admin]
+      summary: Admin - ban or activate user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminUserStatusUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUser"
+
+  # ── DASHBOARD ─────────────────────────────────────────────────────
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get platform stats (for home hero)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /dashboard/owner-summary:
+    get:
+      operationId: getOwnerSummary
+      tags: [dashboard]
+      summary: Owner dashboard summary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OwnerSummary"
+
+  /dashboard/admin-summary:
+    get:
+      operationId: getAdminSummary
+      tags: [dashboard]
+      summary: Admin dashboard summary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSummary"
+
+# ── COMPONENTS ────────────────────────────────────────────────────────
 components:
   schemas:
     HealthStatus:
@@ -31,6 +701,562 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required: [success]
+
+    # ── Auth ──
+    RegisterInput:
+      type: object
+      required: [email, password, first_name, last_name, role]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+          minLength: 6
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: ["string", "null"]
+        role:
+          type: string
+          enum: [student, owner]
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/UserProfile"
+
+    UserProfile:
+      type: object
+      required: [id, email, first_name, last_name, role, created_at]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: ["string", "null"]
+        role:
+          type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+
+    UserProfileUpdate:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+
+    # ── Listings ──
+    Listing:
+      type: object
+      required: [id, name, area, price, rating, review_count, img, amenities, status]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        area:
+          type: string
+        location:
+          type: string
+        price:
+          type: integer
+        type:
+          type: string
+        gender:
+          type: string
+        rating:
+          type: number
+        review_count:
+          type: integer
+        img:
+          type: string
+        amenities:
+          type: array
+          items:
+            type: string
+        badge:
+          type: ["string", "null"]
+        status:
+          type: string
+        desc:
+          type: ["string", "null"]
+
+    ListingDetail:
+      type: object
+      required: [id, name, area, price, rating, review_count, img, amenities, status]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        area:
+          type: string
+        location:
+          type: string
+        price:
+          type: integer
+        type:
+          type: string
+        gender:
+          type: string
+        rating:
+          type: number
+        review_count:
+          type: integer
+        img:
+          type: string
+        amenities:
+          type: array
+          items:
+            type: string
+        badge:
+          type: ["string", "null"]
+        status:
+          type: string
+        desc:
+          type: ["string", "null"]
+        deposit_months:
+          type: integer
+        meals_included:
+          type: boolean
+        wifi_included:
+          type: boolean
+        available_from:
+          type: string
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        owner_id:
+          type: integer
+        owner_name:
+          type: ["string", "null"]
+        owner_since:
+          type: ["string", "null"]
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/ListingImage"
+        created_at:
+          type: string
+
+    ListingsSearchResult:
+      type: object
+      required: [listings, total]
+      properties:
+        listings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Listing"
+        total:
+          type: integer
+
+    ListingImage:
+      type: object
+      required: [id, url]
+      properties:
+        id:
+          type: integer
+        url:
+          type: string
+        caption:
+          type: ["string", "null"]
+        is_primary:
+          type: boolean
+
+    ListingInput:
+      type: object
+      required: [name, area, location, price, desc]
+      properties:
+        name:
+          type: string
+        area:
+          type: string
+        location:
+          type: string
+        price:
+          type: integer
+        type:
+          type: string
+        gender:
+          type: string
+        desc:
+          type: string
+        amenities:
+          type: array
+          items:
+            type: string
+        deposit_months:
+          type: integer
+        meals_included:
+          type: boolean
+        wifi_included:
+          type: boolean
+        available_from:
+          type: string
+        img:
+          type: string
+        badge:
+          type: ["string", "null"]
+
+    ListingUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        area:
+          type: string
+        location:
+          type: string
+        price:
+          type: integer
+        type:
+          type: string
+        gender:
+          type: string
+        desc:
+          type: string
+        amenities:
+          type: array
+          items:
+            type: string
+        deposit_months:
+          type: integer
+        meals_included:
+          type: boolean
+        wifi_included:
+          type: boolean
+        available_from:
+          type: string
+        img:
+          type: string
+        badge:
+          type: ["string", "null"]
+
+    # ── Bookings ──
+    Booking:
+      type: object
+      required: [id, listing_id, student_id, status, created_at]
+      properties:
+        id:
+          type: integer
+        listing_id:
+          type: integer
+        listing_name:
+          type: ["string", "null"]
+        listing_area:
+          type: ["string", "null"]
+        listing_price:
+          type: ["integer", "null"]
+        listing_img:
+          type: ["string", "null"]
+        student_id:
+          type: integer
+        student_name:
+          type: ["string", "null"]
+        student_email:
+          type: ["string", "null"]
+        owner_id:
+          type: ["integer", "null"]
+        move_in_date:
+          type: ["string", "null"]
+        message:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, confirmed, rejected, cancelled]
+        created_at:
+          type: string
+
+    BookingInput:
+      type: object
+      required: [listing_id]
+      properties:
+        listing_id:
+          type: integer
+        move_in_date:
+          type: ["string", "null"]
+        message:
+          type: ["string", "null"]
+
+    BookingStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [confirmed, rejected, cancelled]
+
+    # ── Reviews ──
+    Review:
+      type: object
+      required: [id, listing_id, rating, created_at]
+      properties:
+        id:
+          type: integer
+        listing_id:
+          type: integer
+        listing_name:
+          type: ["string", "null"]
+        student_id:
+          type: integer
+        student_name:
+          type: ["string", "null"]
+        student_avatar:
+          type: ["string", "null"]
+        rating:
+          type: integer
+        comment:
+          type: ["string", "null"]
+        created_at:
+          type: string
+
+    ReviewInput:
+      type: object
+      required: [listing_id, rating]
+      properties:
+        listing_id:
+          type: integer
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: ["string", "null"]
+
+    # ── Messages ──
+    Conversation:
+      type: object
+      required: [id, listing_id, student_id, owner_id, created_at]
+      properties:
+        id:
+          type: integer
+        listing_id:
+          type: integer
+        listing_name:
+          type: ["string", "null"]
+        listing_img:
+          type: ["string", "null"]
+        student_id:
+          type: integer
+        student_name:
+          type: ["string", "null"]
+        owner_id:
+          type: integer
+        owner_name:
+          type: ["string", "null"]
+        last_message:
+          type: ["string", "null"]
+        last_message_at:
+          type: ["string", "null"]
+        unread_count:
+          type: integer
+        created_at:
+          type: string
+
+    ConversationDetail:
+      type: object
+      required: [id, listing_id, student_id, owner_id, messages, created_at]
+      properties:
+        id:
+          type: integer
+        listing_id:
+          type: integer
+        listing_name:
+          type: ["string", "null"]
+        listing_img:
+          type: ["string", "null"]
+        student_id:
+          type: integer
+        student_name:
+          type: ["string", "null"]
+        owner_id:
+          type: integer
+        owner_name:
+          type: ["string", "null"]
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+        created_at:
+          type: string
+
+    Message:
+      type: object
+      required: [id, conversation_id, sender_id, body, created_at]
+      properties:
+        id:
+          type: integer
+        conversation_id:
+          type: integer
+        sender_id:
+          type: integer
+        sender_name:
+          type: ["string", "null"]
+        body:
+          type: string
+        is_read:
+          type: boolean
+        created_at:
+          type: string
+
+    MessageInput:
+      type: object
+      required: [body]
+      properties:
+        body:
+          type: string
+
+    ConversationInput:
+      type: object
+      required: [listing_id]
+      properties:
+        listing_id:
+          type: integer
+
+    UnreadCount:
+      type: object
+      required: [count]
+      properties:
+        count:
+          type: integer
+
+    # ── Admin ──
+    AdminUser:
+      type: object
+      required: [id, email, first_name, last_name, role, is_active, created_at]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: ["string", "null"]
+        role:
+          type: string
+        is_active:
+          type: boolean
+        listing_count:
+          type: integer
+        created_at:
+          type: string
+
+    AdminListingStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [approved, rejected, inactive]
+        notes:
+          type: ["string", "null"]
+
+    AdminUserStatusUpdate:
+      type: object
+      required: [is_active]
+      properties:
+        is_active:
+          type: boolean
+
+    # ── Dashboard ──
+    DashboardStats:
+      type: object
+      required: [total_listings, total_students, satisfaction_rate]
+      properties:
+        total_listings:
+          type: integer
+        total_students:
+          type: integer
+        satisfaction_rate:
+          type: number
+        total_reviews:
+          type: integer
+
+    OwnerSummary:
+      type: object
+      required: [total_listings, active_listings, pending_bookings, total_bookings, unread_messages]
+      properties:
+        total_listings:
+          type: integer
+        active_listings:
+          type: integer
+        pending_bookings:
+          type: integer
+        total_bookings:
+          type: integer
+        confirmed_bookings:
+          type: integer
+        unread_messages:
+          type: integer
+        average_rating:
+          type: number
+        total_reviews:
+          type: integer
+
+    AdminSummary:
+      type: object
+      required: [total_users, total_listings, pending_listings, total_bookings, total_reviews]
+      properties:
+        total_users:
+          type: integer
+        total_students:
+          type: integer
+        total_owners:
+          type: integer
+        total_listings:
+          type: integer
+        approved_listings:
+          type: integer
+        pending_listings:
+          type: integer
+        total_bookings:
+          type: integer
+        total_reviews:
+          type: integer

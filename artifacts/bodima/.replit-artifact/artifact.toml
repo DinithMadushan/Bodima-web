@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "බෝdima.lk — Boarding Finder"
+version = "1.0.0"
+id = "artifacts/bodima"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25780
+
+[services.development]
+run = "pnpm --filter @workspace/bodima run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/bodima", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/bodima/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25780"
+BASE_PATH = "/"
