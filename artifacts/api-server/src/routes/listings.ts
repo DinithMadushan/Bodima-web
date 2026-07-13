@@ -228,6 +228,82 @@ router.patch("/owner/listings/:id", requireRole("owner", "admin"), async (req, r
   res.json(serializeListing(updated));
 });
 
+// Owner: add an image to a listing
+router.post("/owner/listings/:id/images", requireRole("owner", "admin"), async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(raw, 10);
+  if (isNaN(id)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+
+  const [existing] = await db.select().from(listingsTable).where(eq(listingsTable.id, id));
+  if (!existing) {
+    res.status(404).json({ error: "Listing not found" });
+    return;
+  }
+  if (existing.ownerId !== req.user!.userId && req.user!.role !== "admin") {
+    res.status(403).json({ error: "Forbidden" });
+    return;
+  }
+
+  const { url, caption, is_primary } = req.body;
+  if (!url) {
+    res.status(400).json({ error: "url is required" });
+    return;
+  }
+
+  const [image] = await db
+    .insert(listingImagesTable)
+    .values({
+      listingId: id,
+      imageUrl: url,
+      caption: caption ?? null,
+      isPrimary: !!is_primary,
+    })
+    .returning();
+
+  // If this is the first image (or explicitly primary) and the listing has no cover img yet, set it as cover
+  if (!existing.img || is_primary) {
+    await db.update(listingsTable).set({ img: url }).where(eq(listingsTable.id, id));
+  }
+
+  res.status(201).json({
+    id: image.id,
+    url: image.imageUrl,
+    caption: image.caption,
+    is_primary: image.isPrimary,
+  });
+});
+
+// Owner: delete a listing image
+router.delete("/owner/listings/:id/images/:imageId", requireRole("owner", "admin"), async (req, res): Promise<void> => {
+  const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(rawId, 10);
+  const rawImageId = Array.isArray(req.params.imageId) ? req.params.imageId[0] : req.params.imageId;
+  const imageId = parseInt(rawImageId, 10);
+  if (isNaN(id) || isNaN(imageId)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+
+  const [existing] = await db.select().from(listingsTable).where(eq(listingsTable.id, id));
+  if (!existing) {
+    res.status(404).json({ error: "Listing not found" });
+    return;
+  }
+  if (existing.ownerId !== req.user!.userId && req.user!.role !== "admin") {
+    res.status(403).json({ error: "Forbidden" });
+    return;
+  }
+
+  await db
+    .delete(listingImagesTable)
+    .where(and(eq(listingImagesTable.id, imageId), eq(listingImagesTable.listingId, id)));
+
+  res.json({ success: true, message: "Image deleted" });
+});
+
 // Owner: delete listing
 router.delete("/owner/listings/:id", requireRole("owner", "admin"), async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
